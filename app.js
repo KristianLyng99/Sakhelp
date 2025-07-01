@@ -158,20 +158,21 @@ function DateForm() {
     setRawInput('');
   };
 
-  const fieldClass = 'border p-2 rounded w-full';
-  const copyBtnClass = 'ml-2 px-3 py-1 bg-blue-500 text-white rounded text-sm';
+  const fieldClass = 'border p-2 rounded w-full bg-white';
+  const copyBtnClass = 'ml-2 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm';
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="bg-white shadow rounded-lg p-6 space-y-6">
+      <h1 className="text-2xl font-semibold text-gray-800">Date Utility</h1>
       <textarea
         value={rawInput}
         onChange={e => setRawInput(e.target.value)}
         placeholder="Lim inn rådata..."
-        className="w-full h-24 border p-2 rounded"
+        className="w-full h-24 border p-2 rounded bg-white"
       />
       <button
         onClick={parseAutofill}
-        className="px-4 py-2 bg-green-600 text-white rounded"
+        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded"
       >Autofyll</button>
 
       <div className="space-y-4">
@@ -204,11 +205,11 @@ function DateForm() {
         ))}
         <button
           onClick={handleClear}
-          className="px-2 py-1 bg-blue-600 text-white rounded text-sm float-left"
+          className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
         >Tøm alle</button>
       </div>
 
-      <div className="mt-4 clear-left p-4 bg-gray-100 rounded space-y-2">
+      <div className="mt-4 clear-left p-4 bg-gray-50 border rounded-lg space-y-2">
         {durationText && (
           <p className={`font-medium ${diffDays >= 325 && diffDays <= 405 ? 'text-green-700' : 'text-red-700'}`}>Syk til vedtak: {durationText}</p>
         )}

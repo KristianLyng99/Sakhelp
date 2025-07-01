@@ -4,7 +4,7 @@ This small web app provides helpers for working with sickness dates and calculat
 
 ## Getting started
 
-Open `index.html` in a browser. The page includes React and Tailwind via CDN, so no build step is required.
+Open `index.html` in a browser. The page includes React, Tailwind, and the Inter font via CDN, so no build step is required.
 
 Paste raw data and click **Autofyll** to populate the form. You can copy each field using the corresponding button.
 
