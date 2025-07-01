@@ -159,56 +159,94 @@ function DateForm() {
   };
 
   const fieldClass = 'border p-2 rounded w-full';
-  const copyBtnClass = 'ml-2 px-3 py-1 bg-blue-500 text-white rounded text-sm';
+  const copyBtnClass = 'ml-2 px-3 py-1 bg-blue-500 text-white rounded text-sm flex items-center';
 
   return (
     <div className="p-4 space-y-6">
-      <textarea
-        value={rawInput}
-        onChange={e => setRawInput(e.target.value)}
-        placeholder="Lim inn rådata..."
-        className="w-full h-24 border p-2 rounded"
-      />
-      <button
-        onClick={parseAutofill}
-        className="px-4 py-2 bg-green-600 text-white rounded"
-      >Autofyll</button>
+      <h2 className="text-xl font-bold">Sakhelp</h2>
+
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold flex items-center">
+          <svg className="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M4 3h12l4 4v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+            <polyline points="16 3 16 8 21 8" />
+          </svg>
+          Rådata
+        </h3>
+        <textarea
+          value={rawInput}
+          onChange={e => setRawInput(e.target.value)}
+          placeholder="Lim inn rådata..."
+          className="w-full h-24 border p-2 rounded"
+        />
+        <button
+          onClick={parseAutofill}
+          className="px-4 py-2 bg-green-600 text-white rounded"
+        >Autofyll</button>
+      </div>
 
       <div className="space-y-4">
         {[
-          { label: 'Sykdato', value: sykdato, onChange: v => setSykdato(formatInput(v)) },
-          { label: 'Maksdato', value: maksdato, onChange: v => setMaksdato(formatInput(v)) },
-          { label: 'AAP Fra', value: aapFra, onChange: v => applyVedtakDates(v, aapTil) },
-          { label: 'AAP Til', value: aapTil, onChange: v => setAapTil(formatInput(v)) },
-          { label: 'Søknad registrert', value: soknadRegistrert, onChange: v => setSoknadRegistrert(formatInput(v)) },
-          { label: 'Uføretrygd', value: uforetrygd, onChange: v => setUforetrygd(formatInput(v)) }
-        ].map(({ label, value, onChange }) => (
-          <div key={label} className="flex items-center">
-            <div className="flex-1">
-              <label className="block text-sm font-medium">{label}</label>
-              <input
-                type="text"
-                placeholder="DDMMYYYY"
-                value={value}
-                onChange={e => onChange(e.target.value)}
-                className={fieldClass}
-              />
+          { key: 'sykdato', label: 'Sykdato', value: sykdato, onChange: v => setSykdato(formatInput(v)) },
+          { key: 'maksdato', label: 'Maksdato', value: maksdato, onChange: v => setMaksdato(formatInput(v)) },
+          { key: 'aapFra', label: 'AAP Fra', value: aapFra, onChange: v => applyVedtakDates(v, aapTil) },
+          { key: 'aapTil', label: 'AAP Til', value: aapTil, onChange: v => setAapTil(formatInput(v)) },
+          { key: 'soknadRegistrert', label: 'Søknad registrert', value: soknadRegistrert, onChange: v => setSoknadRegistrert(formatInput(v)) },
+          { key: 'uforetrygd', label: 'Uføretrygd', value: uforetrygd, onChange: v => setUforetrygd(formatInput(v)) }
+        ].map(({ key, label, value, onChange }) => {
+          const invalid = value && !parseDate(value);
+          return (
+            <div key={key} className="flex items-start">
+              <div className="flex-1">
+                <label className="block text-sm font-medium">{label}</label>
+                <input
+                  type="text"
+                  placeholder="DDMMYYYY"
+                  value={value}
+                  onChange={e => onChange(e.target.value)}
+                  className={`${fieldClass} ${invalid ? 'border-red-500' : ''}`}
+                />
+                {invalid && <p className="text-red-600 text-xs mt-1">Ugyldig dato</p>}
+              </div>
+              <button
+                type="button"
+                onClick={() => copyToClipboard(value)}
+                className={copyBtnClass}
+                disabled={!value}
+              >
+                <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="8" y="8" width="13" height="13" rx="2" />
+                  <rect x="3" y="3" width="13" height="13" rx="2" />
+                </svg>
+                Kopier
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => copyToClipboard(value)}
-              className={copyBtnClass}
-              disabled={!value}
-            >Kopier</button>
-          </div>
-        ))}
+          );
+        })}
         <button
           onClick={handleClear}
-          className="px-2 py-1 bg-blue-600 text-white rounded text-sm float-left"
-        >Tøm alle</button>
+          className="px-2 py-1 bg-blue-600 text-white rounded text-sm float-left flex items-center"
+        >
+          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 6h18" />
+            <path d="M8 6V3h8v3" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14" />
+          </svg>
+          Tøm alle
+        </button>
       </div>
 
-      <div className="mt-4 clear-left p-4 bg-gray-100 rounded space-y-2">
+      <div className="space-y-2 clear-left p-4 bg-gray-100 rounded mt-4">
+        <h3 className="text-lg font-semibold flex items-center">
+          <svg className="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          Resultater
+        </h3>
         {durationText && (
           <p className={`font-medium ${diffDays >= 325 && diffDays <= 405 ? 'text-green-700' : 'text-red-700'}`}>Syk til vedtak: {durationText}</p>
         )}
