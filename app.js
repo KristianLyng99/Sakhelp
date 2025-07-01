@@ -12,10 +12,14 @@ function DateForm() {
   const [teoretiskSykdato, setTeoretiskSykdato] = useState('');
   const [avgUforegrad, setAvgUforegrad] = useState(null);
   const [rawInput, setRawInput] = useState('');
+  const [copiedField, setCopiedField] = useState(null);
 
-  const copyToClipboard = async (text) => {
+  const copyToClipboard = async (text, key) => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      try { await navigator.clipboard.writeText(text); return; } catch {}
+      try { await navigator.clipboard.writeText(text); } catch {}
+      setCopiedField(key);
+      setTimeout(() => setCopiedField(null), 2000);
+      return;
     }
     const textarea = document.createElement('textarea');
     textarea.value = text;
@@ -41,11 +45,18 @@ function DateForm() {
   };
 
   const parseDate = (str) => {
-    const parts = str.split('.').map(Number);
-    if (parts.length !== 3) return null;
-    const [d, m, y] = parts;
-    const date = new Date(y, m - 1, d);
-    return isNaN(date) ? null : date;
+    const m = str.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+    if (!m) return null;
+    const [, d, mo, y] = m;
+    const date = new Date(`${y}-${mo}-${d}`);
+    if (
+      date.getFullYear() !== Number(y) ||
+      date.getMonth() + 1 !== Number(mo) ||
+      date.getDate() !== Number(d)
+    ) {
+      return null;
+    }
+    return date;
   };
   const formatDate = (date) => {
     const d = String(date.getDate()).padStart(2, '0');
@@ -166,8 +177,8 @@ function DateForm() {
       <h2 className="text-xl font-bold">Sakhelp</h2>
 
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold flex items-center">
-          <svg className="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <h3 className="text-lg font-semibold flex items-center">
+            <svg className="w-5 h-5 mr-1 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M4 3h12l4 4v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
             <polyline points="16 3 16 8 21 8" />
           </svg>
@@ -184,6 +195,16 @@ function DateForm() {
           className="px-4 py-2 bg-green-600 text-white rounded"
         >Autofyll</button>
       </div>
+
+      <h3 className="text-lg font-semibold flex items-center mt-4">
+        <svg className="w-5 h-5 mr-1 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+        Datoer
+      </h3>
 
       <div className="space-y-4">
         {[
@@ -210,16 +231,19 @@ function DateForm() {
               </div>
               <button
                 type="button"
-                onClick={() => copyToClipboard(value)}
+                onClick={() => copyToClipboard(value, key)}
                 className={copyBtnClass}
                 disabled={!value}
               >
-                <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-4 h-4 mr-1 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="8" y="8" width="13" height="13" rx="2" />
                   <rect x="3" y="3" width="13" height="13" rx="2" />
                 </svg>
                 Kopier
               </button>
+              {copiedField === key && (
+                <span className="ml-2 text-green-600 text-sm">Kopiert!</span>
+              )}
             </div>
           );
         })}
@@ -227,7 +251,7 @@ function DateForm() {
           onClick={handleClear}
           className="px-2 py-1 bg-blue-600 text-white rounded text-sm float-left flex items-center"
         >
-          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="w-4 h-4 mr-1 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 6h18" />
             <path d="M8 6V3h8v3" />
             <path d="M10 11v6" />
